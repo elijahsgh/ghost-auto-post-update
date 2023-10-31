@@ -34,6 +34,9 @@ post_to_update = result['posts'][0]
 
 soup = BeautifulSoup(post_to_update['html'], "html.parser")
 
+excerpt_snippet = soup.find('p').text[:300]
+excerpt_text = excerpt_snippet[:excerpt_snippet.rfind('.')+1]
+
 soup.find('h1').decompose()
 
 results = soup.select("h2, h3, h4")
@@ -86,6 +89,7 @@ put_result = requests.put(f"{ghost_site}{admin_posts_url}{post_to_update['id']}/
             {
                 "updated_at": post_to_update['updated_at'],
                 "html": str(soup),
+                "custom_excerpt": excerpt_text,
             }
         ]
     },
@@ -94,4 +98,4 @@ put_result = requests.put(f"{ghost_site}{admin_posts_url}{post_to_update['id']}/
     }
 )
 
-print(f"Put result {put_result.status_code}")
+print(f"Put result {put_result.status_code} {put_result.text}")
